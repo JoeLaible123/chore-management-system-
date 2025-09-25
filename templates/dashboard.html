@@ -1,0 +1,150 @@
+<!-- #Joseph I Laible & Sam Levy
+# CSE 682 Software Engineering
+# Syracuse University 
+#Project Final
+#3/16/25 
+rewards html
+This page serves as the dashboard for logged-in users. 
+Parents can assign chores, verify completed chores, and manage rewards, while children can view and complete their assigned chores and check their points. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Chore-Inator</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Welcome, {{ user.username }}</h2>
+        <p>Role: {{ user.role }}</p>
+
+        {% if user.role == 'Parent' %}
+        <a href="{{ url_for('assign_chore') }}" class="btn btn-primary">Assign Chore</a>
+
+        <h3 class="mt-4">Children's Assigned Tasks</h3>
+        <ul class="list-group">
+            {% for child in family_children %}
+            <li class="list-group-item">
+                <h5>{{ child.username }}</h5>
+                <ul>
+                    {% for chore in child.chores %}
+                    <li>
+                        {{ chore.title }} - 
+                        {% if chore.completed %}
+                            <span class="text-success">Completed</span>
+                        {% else %}
+                            <span class="text-danger">Pending</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <h3 class="mt-4">Family Rewards</h3>
+        <ul class="list-group">
+            {% for reward in rewards %}
+            <li class="list-group-item">
+                {{ reward.name }} - {{ reward.point_cost }} points
+                {% if reward.redeemer %}
+                    <span class="text-success">Redeemed by: {{ reward.redeemer.username }}</span>
+                    <form method="POST" action="{{ url_for('remove_redeemed_reward', reward_id=reward.id) }}" class="d-inline">
+                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                    </form>
+                {% else %}
+                    <span class="text-warning">Not redeemed</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+
+        <h3 class="mt-4">Add New Reward</h3>
+        <form method="POST" action="{{ url_for('add_reward') }}">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <input type="text" class="form-control" name="name" placeholder="Reward Name" required>
+                </div>
+                <div class="col-md-4">
+                    <input type="number" class="form-control" name="point_cost" placeholder="Point Cost" required>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-success">Add Reward</button>
+                </div>
+            </div>
+        </form>
+
+        <h3 class="mt-4">Chores Pending Verification</h3>
+        <ul class="list-group">
+            {% for child in family_children %}
+            <li class="list-group-item">
+                <h5>{{ child.username }}</h5>
+                <ul>
+                    {% for chore in child.chores %}
+                    {% if chore.completed and not chore.verified %}
+                    <li>
+                        {{ chore.title }} - 
+                        <form method="POST" action="{{ url_for('verify_chore', chore_id=chore.id) }}" class="d-inline">
+                            <button type="submit" class="btn btn-success btn-sm">Verify</button>
+                        </form>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if user.role == 'Child' %}
+        <h3 class="mt-4">Your Chores</h3>
+        <ul class="list-group">
+            {% for chore in chores %}
+            <li class="list-group-item">
+                <h5 class="mb-1">{{ chore.title }}</h5>
+                
+                <!-- Display description -->
+                {% if chore.description %}
+                <p class="mb-1"><strong>Instructions:</strong> {{ chore.description }}</p>
+                {% endif %}
+                
+                <!-- Display status -->
+                <div>
+                    {% if chore.completed %}
+                        {% if chore.verified %}
+                            <span class="badge bg-success">Verified - Points Awarded</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Pending Parent Verification</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="badge bg-secondary">Not Completed</span>
+                    {% endif %}
+                </div>
+                
+                <!-- Complete button -->
+                {% if not chore.completed %}
+                <a href="{{ url_for('complete_chore', chore_id=chore.id) }}" class="btn btn-success btn-sm mt-2">Mark as Complete</a>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+
+        <!-- Display current points and link to rewards -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3>Your Rewards</h3>
+            </div>
+            <div class="card-body">
+                <h4>Your Current Points: <span class="badge bg-success">{{ user.points }}</span></h4>
+                <a href="{{ url_for('rewards') }}" class="btn btn-primary mt-2">Visit Reward Store</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <a href="{{ url_for('logout') }}" class="btn btn-danger mt-3">Logout</a>
+    </div>
+</body>
+</html>
+
+

@@ -1,0 +1,58 @@
+<!-- #Joseph I Laible & Sam Levy
+# CSE 682 Software Engineering
+# Syracuse University 
+#Project Final
+#3/16/25 
+rewards html
+This page allows parents to assign new chores to their children. 
+Parents can specify the chore title, description, reward points, due date, and the child to whom the chore is assigned. -->
+\templates\assign_chore.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Chore - Chore-Inator</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Assign a New Chore</h2>
+
+        <form method="POST">
+            <div class="mb-3">
+                <label for="title" class="form-label">Chore Title</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description (instructions for the child)</label>
+                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="reward_points" class="form-label">Reward Points</label>
+                <input type="number" class="form-control" id="reward_points" name="reward_points" min="1" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="due_date" class="form-label">Due Date</label>
+                <input type="date" class="form-control" id="due_date" name="due_date">
+            </div>
+
+            <div class="mb-3">
+                <label for="assigned_to" class="form-label">Assign To</label>
+                <select class="form-control" id="assigned_to" name="assigned_to" required>
+                    <option value="">Select Child</option>
+                    {% for child in children %}
+                    <option value="{{ child.id }}">{{ child.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Assign Chore</button>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

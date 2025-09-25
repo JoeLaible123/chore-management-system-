@@ -1,0 +1,67 @@
+<!-- #Joseph I Laible & Sam Levy
+# CSE 682 Software Engineering
+# Syracuse University 
+#Project Final
+#3/16/25 
+rewards html
+ This page displays the available rewards for the logged-in user and their current points. 
+ Users can redeem rewards if they have enough points or see a message if no rewards are available. -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ChoreInator - Rewards</title>
+    <!-- Link to Bootstrap CSS for styling -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Page title -->
+        <h1>Available Rewards</h1>
+        <!-- Display the user's current points -->
+        <p>Your points: <strong>{{ user.points }}</strong></p>
+
+        <!-- Display any flashed messages (e.g., success or error messages) -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <!-- Show each message with its corresponding category (e.g., success, danger) -->
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Check if there are any rewards available -->
+        {% if rewards %}
+            <div class="row mt-4">
+                <!-- Loop through each reward and display it -->
+                {% for reward in rewards %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <!-- Display the reward name -->
+                                <h5 class="card-title">{{ reward.name }}</h5>
+                                <!-- Display the cost of the reward in points -->
+                                <p class="card-text">Cost: {{ reward.point_cost }} points</p>
+                                <!-- Check if the user has enough points to redeem the reward -->
+                                {% if user.points >= reward.point_cost %}
+                                    <!-- If the user has enough points, show a redeem button -->
+                                    <a href="{{ url_for('redeem_reward', reward_id=reward.id) }}" class="btn btn-primary">Redeem</a>
+                                {% else %}
+                                    <!-- If the user doesn't have enough points, disable the button -->
+                                    <button class="btn btn-secondary" disabled>Not enough points</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- If no rewards are available, display a message -->
+            <p>No rewards available yet.</p>
+        {% endif %}
+
+        <!-- Button to navigate back to the dashboard -->
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+    </div>
+</body>
+</html>
