@@ -1,10 +1,6 @@
-%#Joseph I Laible & Sam Levy
-# CSE 682 Software Engineering
-# Syracuse University 
-#Project Final
-#3/16/25
-#app.py
-# This is the main file for the final project. It contains the main function and the routes for the application.
+%#Joseph I Laible 
+
+
 # It also contains the database models and the main logic for the application.
 # The application is a web-based application that allows parents to assign chores to their children and reward them with points.
 # The application is built using Flask, SQLAlchemy, and Flask-Login.
